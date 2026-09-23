@@ -11,7 +11,7 @@ from django.views.generic import (
 )
 
 from . import services
-from .forms import EmprestimoForm, ReservaForm
+from .forms import EmprestimoForm, LivroForm, ReservaForm
 from .models import Autor, Categoria, Emprestimo, Exemplar, Livro, Membro, Reserva
 from .services import RegraDeNegocioError
 
@@ -107,16 +107,18 @@ class ExcluirBase(LoginRequiredMixin, DeleteView):
         return ctx
 
 
-def crud(modelo, prefixo, titulo, colunas, campos, busca=()):
+def crud(modelo, prefixo, titulo, colunas, campos=None, busca=(), form_class=None):
     nome = modelo.__name__
     lista = type(f"{nome}Lista", (ListaBase,), dict(
         model=modelo, prefixo=prefixo, titulo=titulo, colunas=colunas, campos_busca=busca))
+    # Usa um ModelForm proprio quando informado; senao, gera um a partir de 'campos'.
+    config_form = {"form_class": form_class} if form_class else {"fields": campos}
     criar = type(f"{nome}Criar", (FormBase, CreateView), dict(
-        model=modelo, fields=campos, prefixo=prefixo, titulo=f"Novo cadastro: {titulo}",
-        success_message="Registro criado com sucesso."))
+        model=modelo, prefixo=prefixo, titulo=f"Novo cadastro: {titulo}",
+        success_message="Registro criado com sucesso.", **config_form))
     editar = type(f"{nome}Editar", (FormBase, UpdateView), dict(
-        model=modelo, fields=campos, prefixo=prefixo, titulo=f"Editar: {titulo}",
-        success_message="Registro atualizado com sucesso."))
+        model=modelo, prefixo=prefixo, titulo=f"Editar: {titulo}",
+        success_message="Registro atualizado com sucesso.", **config_form))
     excluir = type(f"{nome}Excluir", (ExcluirBase,), dict(model=modelo, prefixo=prefixo))
     return lista, criar, editar, excluir
 
@@ -132,7 +134,7 @@ _, LivroCriar, LivroEditar, LivroExcluir = crud(
     Livro, "livro", "Livros",
     [("Título", "titulo"), ("Autores", "autores_texto"), ("Categoria", "categoria"),
      ("Ano", "ano"), ("Disponíveis", "disponiveis")],
-    ["titulo", "autores", "categoria", "ano", "editora"], busca=("titulo", "autores__nome"))
+    busca=("titulo", "autores__nome"), form_class=LivroForm)
 
 ExemplarLista, ExemplarCriar, ExemplarEditar, ExemplarExcluir = crud(
     Exemplar, "exemplar", "Exemplares",

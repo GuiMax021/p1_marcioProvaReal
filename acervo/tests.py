@@ -196,3 +196,33 @@ class BuscaEFiltroLivrosTests(BaseTest):
 
     def test_categoria_invalida_e_ignorada(self):
         self.assertEqual(self.titulos(categoria="abc"), {"Livro A", "Contos Completos"})
+
+
+class ValidacaoAnoLivroTests(BaseTest):
+    """Feature 2: ano de publicacao nao pode ser futuro."""
+
+    def dados(self, ano):
+        from .models import Autor
+        autor = Autor.objects.create(nome=f"Autor {ano}")
+        return {"titulo": "Novo", "autores": [autor.pk], "categoria": self.livro.categoria.pk, "ano": ano, "editora": "X"}
+
+    def test_ano_futuro_e_rejeitado(self):
+        from django.utils import timezone
+        from .forms import LivroForm
+        form = LivroForm(self.dados(timezone.localdate().year + 1))
+        self.assertFalse(form.is_valid())
+        self.assertIn("ano", form.errors)
+        self.assertIn("não pode ser futuro", form.errors["ano"][0])
+
+    def test_ano_atual_e_passado_sao_aceitos(self):
+        from django.utils import timezone
+        from .forms import LivroForm
+        self.assertTrue(LivroForm(self.dados(timezone.localdate().year)).is_valid())
+        self.assertTrue(LivroForm(self.dados(1899)).is_valid())
+
+    def test_erro_aparece_na_tela_e_nao_grava(self):
+        from django.utils import timezone
+        self.client.force_login(get_user_model().objects.create_user("u", password="x12345678"))
+        resp = self.client.post(reverse("livro_criar"), self.dados(timezone.localdate().year + 5))
+        self.assertContains(resp, "não pode ser futuro")
+        self.assertFalse(Livro.objects.filter(titulo="Novo").exists())
