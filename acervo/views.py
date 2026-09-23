@@ -16,6 +16,13 @@ from .models import Autor, Categoria, Emprestimo, Exemplar, Livro, Membro, Reser
 from .services import RegraDeNegocioError
 
 
+def querystring(request):
+    """Parametros da URL sem 'page', para manter filtros ao paginar."""
+    params = request.GET.copy()
+    params.pop("page", None)
+    return params.urlencode()
+
+
 # ---------- Home ----------
 class HomeView(LoginRequiredMixin, TemplateView):
     template_name = "acervo/home.html"
@@ -59,6 +66,7 @@ class ListaBase(LoginRequiredMixin, ListView):
         ctx.update(
             titulo=self.titulo, colunas=self.colunas, prefixo=self.prefixo,
             q=self.request.GET.get("q", ""), pode_buscar=bool(self.campos_busca),
+            params=querystring(self.request),
         )
         return ctx
 
@@ -120,7 +128,7 @@ CategoriaLista, CategoriaCriar, CategoriaEditar, CategoriaExcluir = crud(
 AutorLista, AutorCriar, AutorEditar, AutorExcluir = crud(
     Autor, "autor", "Autores", [("Nome", "nome")], ["nome"], busca=("nome",))
 
-LivroLista, LivroCriar, LivroEditar, LivroExcluir = crud(
+_, LivroCriar, LivroEditar, LivroExcluir = crud(
     Livro, "livro", "Livros",
     [("Título", "titulo"), ("Autores", "autores_texto"), ("Categoria", "categoria"),
      ("Ano", "ano"), ("Disponíveis", "disponiveis")],
@@ -136,6 +144,54 @@ MembroLista, MembroCriar, MembroEditar, MembroExcluir = crud(
     Membro, "membro", "Membros",
     [("Nome", "nome"), ("E-mail", "email"), ("Telefone", "telefone"), ("Ativo", "ativo")],
     ["nome", "email", "telefone", "ativo"], busca=("nome", "email"))
+
+
+class LivroLista(LoginRequiredMixin, ListView):
+    """
+    Listagem principal com busca e filtros (Feature 1).
+
+    Parametros da URL (todos opcionais e combinaveis):
+      ?q=texto          busca por titulo OU nome do autor (icontains)
+      ?status=...       disponivel | emprestado
+      ?categoria=<id>   categoria CDD
+    """
+    model = Livro
+    template_name = "acervo/livro_lista.html"
+    paginate_by = 20
+
+    def get_queryset(self):
+        qs = Livro.objects.select_related("categoria").prefetch_related("autores")
+
+        q = self.request.GET.get("q", "").strip()
+        status = self.request.GET.get("status", "")
+        categoria = self.request.GET.get("categoria", "")
+
+        if q:
+            # Q() combina titulo OU autor numa unica consulta
+            qs = qs.filter(Q(titulo__icontains=q) | Q(autores__nome__icontains=q))
+
+        if categoria.isdigit():
+            qs = qs.filter(categoria_id=int(categoria))
+
+        livres = Exemplar.objects.disponiveis().values_list("livro_id", flat=True)
+        if status == "disponivel":
+            qs = qs.filter(pk__in=livres)
+        elif status == "emprestado":
+            # tem exemplar fisico, mas nenhum esta livre
+            qs = qs.filter(exemplares__tipo=Exemplar.Tipo.FISICO).exclude(pk__in=livres)
+
+        return qs.distinct()
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx.update(
+            categorias=Categoria.objects.all(),
+            q=self.request.GET.get("q", ""),
+            status=self.request.GET.get("status", ""),
+            categoria=self.request.GET.get("categoria", ""),
+            params=querystring(self.request),
+        )
+        return ctx
 
 
 class LivroDetalhe(LoginRequiredMixin, DetailView):
@@ -164,6 +220,7 @@ class EmprestimoLista(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx["filtro"] = self.filtro
+        ctx["params"] = querystring(self.request)
         return ctx
 
 
@@ -231,6 +288,11 @@ class ReservaLista(LoginRequiredMixin, ListView):
         if self.request.GET.get("status", "ativas") == "ativas":
             qs = qs.filter(status=Reserva.Status.ATIVA)
         return qs
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["params"] = querystring(self.request)
+        return ctx
 
 
 class ReservaCriar(LoginRequiredMixin, FormView):

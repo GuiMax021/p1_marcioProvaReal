@@ -147,3 +147,52 @@ class ViewsTests(BaseTest):
         emprestar(self.ex, self.ana)
         self.client.post(reverse("exemplar_excluir", args=[self.ex.pk]))
         self.assertTrue(Exemplar.objects.filter(pk=self.ex.pk).exists())
+
+
+class BuscaEFiltroLivrosTests(BaseTest):
+    """Feature 1: busca por texto + filtros na listagem de livros."""
+
+    def setUp(self):
+        super().setUp()
+        from .models import Autor
+        self.client.force_login(get_user_model().objects.create_user("u", password="x12345678"))
+        cat2 = Categoria.objects.create(codigo="800", nome="Literatura")
+        self.autor = Autor.objects.create(nome="Machado de Assis")
+        self.livro.autores.add(Autor.objects.create(nome="Maria Fernandes"))
+        self.livro2 = Livro.objects.create(titulo="Contos Completos", categoria=cat2, ano=1899)
+        self.livro2.autores.add(self.autor)
+        self.ex2 = Exemplar.objects.create(livro=self.livro2, codigo="002", localizacao="I1")
+
+    def titulos(self, **params):
+        resp = self.client.get(reverse("livro_lista"), params)
+        self.assertEqual(resp.status_code, 200)
+        return {l.titulo for l in resp.context["object_list"]}
+
+    def test_sem_filtros_lista_tudo(self):
+        self.assertEqual(self.titulos(), {"Livro A", "Contos Completos"})
+
+    def test_busca_por_titulo_sem_diferenciar_maiusculas(self):
+        self.assertEqual(self.titulos(q="contos"), {"Contos Completos"})
+
+    def test_busca_por_autor(self):
+        self.assertEqual(self.titulos(q="machado"), {"Contos Completos"})
+
+    def test_filtro_por_categoria(self):
+        self.assertEqual(self.titulos(categoria=self.livro.categoria.pk), {"Livro A"})
+
+    def test_filtro_disponivel_e_emprestado(self):
+        emprestar(self.ex, self.ana)
+        self.assertEqual(self.titulos(status="disponivel"), {"Contos Completos"})
+        self.assertEqual(self.titulos(status="emprestado"), {"Livro A"})
+
+    def test_filtros_combinados(self):
+        self.assertEqual(self.titulos(q="livro", categoria=self.livro.categoria.pk, status="disponivel"), {"Livro A"})
+        self.assertEqual(self.titulos(q="livro", categoria=self.livro2.categoria.pk), set())
+
+    def test_sem_resultado_mostra_mensagem_e_mantem_termo(self):
+        resp = self.client.get(reverse("livro_lista"), {"q": "inexistente"})
+        self.assertContains(resp, "Nenhum livro encontrado")
+        self.assertContains(resp, 'value="inexistente"')
+
+    def test_categoria_invalida_e_ignorada(self):
+        self.assertEqual(self.titulos(categoria="abc"), {"Livro A", "Contos Completos"})

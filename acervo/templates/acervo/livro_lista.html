@@ -1,0 +1,42 @@
+{% extends "acervo/base.html" %}
+{% block content %}
+<h1>Livros</h1>
+
+<form method="get" class="barra">
+  <input type="text" name="q" value="{{ request.GET.q }}" placeholder="Buscar por título ou autor...">
+  <select name="categoria">
+    <option value="">Todas as categorias</option>
+    {% for c in categorias %}
+      <option value="{{ c.pk }}" {% if c.pk|stringformat:"s" == categoria %}selected{% endif %}>{{ c }}</option>
+    {% endfor %}
+  </select>
+  <select name="status">
+    <option value="">Disponíveis e emprestados</option>
+    <option value="disponivel" {% if status == "disponivel" %}selected{% endif %}>Somente disponíveis</option>
+    <option value="emprestado" {% if status == "emprestado" %}selected{% endif %}>Somente emprestados</option>
+  </select>
+  <button class="btn" type="submit">Filtrar</button>
+  <a class="btn sec" href="{% url 'livro_lista' %}">Limpar</a>
+  <a class="btn ok" href="{% url 'livro_criar' %}">+ Novo livro</a>
+</form>
+
+<table>
+  <tr><th>Título</th><th>Autores</th><th>Categoria</th><th>Ano</th><th>Disponíveis</th><th>Ações</th></tr>
+  {% for livro in object_list %}
+  <tr>
+    <td><a href="{% url 'livro_detalhe' livro.pk %}">{{ livro.titulo }}</a></td>
+    <td>{{ livro.autores_texto }}</td>
+    <td>{{ livro.categoria }}</td>
+    <td>{{ livro.ano }}</td>
+    <td>{{ livro.disponiveis }}</td>
+    <td>
+      <a class="btn sec" href="{% url 'livro_editar' livro.pk %}">Editar</a>
+      <a class="btn perigo" href="{% url 'livro_excluir' livro.pk %}">Excluir</a>
+    </td>
+  </tr>
+  {% empty %}
+  <tr><td colspan="6">Nenhum livro encontrado{% if request.GET.q or categoria or status %} para os filtros aplicados{% endif %}.</td></tr>
+  {% endfor %}
+</table>
+{% include "acervo/paginacao.html" %}
+{% endblock %}
