@@ -1,0 +1,32 @@
+{% extends "acervo/base.html" %}
+{% block content %}
+<h1>Empréstimos</h1>
+<div class="barra">
+  <a class="btn ok" href="{% url 'emprestimo_criar' %}">+ Novo empréstimo</a>
+  <a class="btn sec" href="?status=abertos">Abertos</a>
+  <a class="btn sec" href="?status=atrasados">Em atraso</a>
+  <a class="btn sec" href="?status=multas">Multas pendentes</a>
+  <a class="btn sec" href="?status=todos">Todos</a>
+</div>
+<table>
+  <tr><th>Exemplar</th><th>Membro</th><th>Emprestado</th><th>Prevista</th><th>Devolvido</th><th>Multa</th><th>Ações</th></tr>
+  {% for e in object_list %}
+  <tr>
+    <td>{{ e.exemplar }}</td><td>{{ e.membro }}</td>
+    <td>{{ e.data_emprestimo|date:"d/m/Y" }}</td>
+    <td>{{ e.data_prevista|date:"d/m/Y" }}{% if e.em_atraso %} <span class="tag atraso">{{ e.dias_atraso }}d atraso</span>{% endif %}</td>
+    <td>{{ e.data_devolucao|date:"d/m/Y"|default:"—" }}</td>
+    <td>{% if e.multa_atual %}R$ {{ e.multa_atual }}{% if e.multa_paga %} (paga){% endif %}{% else %}—{% endif %}</td>
+    <td>
+      {% if e.aberto %}
+        <form class="inline" method="post" action="{% url 'emprestimo_devolver' e.pk %}">{% csrf_token %}<button class="btn" type="submit">Devolver</button></form>
+      {% elif e.multa > 0 and not e.multa_paga %}
+        <form class="inline" method="post" action="{% url 'emprestimo_pagar' e.pk %}">{% csrf_token %}<button class="btn ok" type="submit">Quitar multa</button></form>
+      {% endif %}
+    </td>
+  </tr>
+  {% empty %}<tr><td colspan="7">Nenhum empréstimo.</td></tr>
+  {% endfor %}
+</table>
+{% include "acervo/paginacao.html" %}
+{% endblock %}

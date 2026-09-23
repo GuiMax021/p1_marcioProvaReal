@@ -1,0 +1,27 @@
+{% extends "acervo/base.html" %}
+{% block content %}
+<h1>{{ object.titulo }}</h1>
+<p>{{ object.autores_texto }} · {{ object.categoria }} · {{ object.ano }}{% if object.editora %} · {{ object.editora }}{% endif %}</p>
+
+<h2>Exemplares ({{ object.disponiveis }} físico(s) disponível(is))</h2>
+<table>
+  <tr><th>Código</th><th>Tipo</th><th>Localização</th><th>Situação</th></tr>
+  {% for ex in object.exemplares.all %}
+  <tr><td>{{ ex.codigo }}</td><td>{{ ex.get_tipo_display }}</td><td>{{ ex.localizacao }}</td><td>{{ ex.situacao }}</td></tr>
+  {% empty %}<tr><td colspan="4">Sem exemplares.</td></tr>
+  {% endfor %}
+</table>
+
+<h2>Fila de reserva</h2>
+<table>
+  <tr><th>Posição</th><th>Membro</th><th>Desde</th></tr>
+  {% for r in object.fila_reservas %}
+  <tr><td>{{ forloop.counter }}º</td><td>{{ r.membro }}</td><td>{{ r.criada_em|date:"d/m/Y H:i" }}</td></tr>
+  {% empty %}<tr><td colspan="3">Ninguém na fila.</td></tr>
+  {% endfor %}
+</table>
+<div class="barra">
+  <a class="btn" href="{% url 'reserva_criar' %}?livro={{ object.pk }}">Reservar</a>
+  <a class="btn sec" href="{% url 'livro_lista' %}">Voltar</a>
+</div>
+{% endblock %}

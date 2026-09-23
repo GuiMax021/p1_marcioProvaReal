@@ -1,0 +1,12 @@
+{% extends "acervo/base.html" %}
+{% block content %}
+<h1>{{ titulo }}</h1>
+<div class="form-box">
+  <form method="post">{% csrf_token %}
+    {{ form.non_field_errors }}
+    {{ form.as_p }}
+    <button class="btn ok" type="submit">{{ rotulo|default:"Salvar" }}</button>
+    <a class="btn sec" href="{% url prefixo|add:'_lista' %}">Cancelar</a>
+  </form>
+</div>
+{% endblock %}

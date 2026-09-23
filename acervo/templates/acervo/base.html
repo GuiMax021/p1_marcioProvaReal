@@ -1,0 +1,59 @@
+{% load static %}<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Biblioteca{% endblock %}</title>
+  <style>
+    :root { --azul:#1F4E78; --cinza:#f4f6f8; --borda:#d5dbe1; }
+    * { box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; margin:0; background:var(--cinza); color:#222; }
+    header { background:var(--azul); color:#fff; padding:.6rem 1.2rem; display:flex; flex-wrap:wrap; gap:1rem; align-items:center; }
+    header a { color:#fff; text-decoration:none; font-size:.95rem; }
+    header a:hover { text-decoration:underline; }
+    header .marca { font-weight:bold; font-size:1.1rem; margin-right:.5rem; }
+    header form { margin-left:auto; }
+    main { max-width:1000px; margin:1.2rem auto; padding:0 1rem; }
+    h1 { color:var(--azul); font-size:1.4rem; }
+    table { width:100%; border-collapse:collapse; background:#fff; }
+    th { background:var(--azul); color:#fff; text-align:left; }
+    th, td { padding:.5rem .6rem; border:1px solid var(--borda); font-size:.92rem; }
+    .btn { display:inline-block; background:var(--azul); color:#fff; border:0; padding:.4rem .8rem; border-radius:4px; cursor:pointer; text-decoration:none; font-size:.9rem; }
+    .btn.sec { background:#6c7a89; } .btn.perigo { background:#b3261e; } .btn.ok { background:#2e7d32; }
+    .msg { padding:.6rem .9rem; border-radius:4px; margin-bottom:.6rem; }
+    .msg.success { background:#e3f4e4; } .msg.error { background:#fde4e2; } .msg.info { background:#e5eefb; }
+    .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:.8rem; }
+    .card { background:#fff; border:1px solid var(--borda); border-radius:6px; padding:1rem; text-align:center; }
+    .card b { display:block; font-size:1.8rem; color:var(--azul); }
+    .card.alerta b { color:#b3261e; }
+    .barra { display:flex; gap:.5rem; margin:.8rem 0; flex-wrap:wrap; align-items:center; }
+    .form-box { background:#fff; border:1px solid var(--borda); padding:1rem; border-radius:6px; max-width:560px; }
+    .form-box p { margin:.6rem 0; } .form-box input[type=text], .form-box input[type=email], .form-box input[type=number], .form-box select { width:100%; padding:.4rem; }
+    .errorlist { color:#b3261e; list-style:none; padding:0; margin:.2rem 0; }
+    .tag { padding:.1rem .5rem; border-radius:10px; font-size:.8rem; background:#e5eefb; }
+    .tag.atraso { background:#fde4e2; color:#b3261e; }
+    form.inline { display:inline; }
+  </style>
+</head>
+<body>
+<header>
+  <a class="marca" href="{% url 'home' %}">📚 Biblioteca</a>
+  {% if user.is_authenticated %}
+    <a href="{% url 'livro_lista' %}">Livros</a>
+    <a href="{% url 'exemplar_lista' %}">Exemplares</a>
+    <a href="{% url 'autor_lista' %}">Autores</a>
+    <a href="{% url 'categoria_lista' %}">Categorias</a>
+    <a href="{% url 'membro_lista' %}">Membros</a>
+    <a href="{% url 'emprestimo_lista' %}">Empréstimos</a>
+    <a href="{% url 'reserva_lista' %}">Reservas</a>
+    <form method="post" action="{% url 'logout' %}">{% csrf_token %}
+      <button class="btn sec" type="submit">Sair ({{ user.username }})</button>
+    </form>
+  {% endif %}
+</header>
+<main>
+  {% for m in messages %}<div class="msg {{ m.tags }}">{{ m }}</div>{% endfor %}
+  {% block content %}{% endblock %}
+</main>
+</body>
+</html>

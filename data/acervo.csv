@@ -1,0 +1,31 @@
+Codigo,Titulo,Autor,Categoria_Codigo,Categoria_Nome,Tipo_Acervo,Ano,Editora,Localizacao
+001,Enciclopedia Geral do Conhecimento,Equipe Editorial,000,Generalidades e Informacao,Fisico,2018,Editora Referencia,Estante A1
+002,Manual de Biblioteconomia,Maria Fernandes,000,Generalidades e Informacao,Digital,2021,Editora Acadêmica,Repositorio Digital
+003,O Mundo das Enciclopedias,Carlos Bittencourt,000,Generalidades e Informacao,Fisico,2015,Editora Saber,Estante A2
+004,Etica para um Mundo em Mudanca,Jose Ramos,100,Filosofia e Psicologia,Fisico,2017,Editora Reflexao,Estante B1
+005,Introducao a Logica Formal,Ana Paula Costa,100,Filosofia e Psicologia,Digital,2020,Editora Universitaria,Repositorio Digital
+006,A Mente Humana - Ensaios,Pedro Almeida,100,Filosofia e Psicologia,Fisico,2019,Editora Reflexao,Estante B2
+007,Historia das Religioes,Fatima Souza,200,Religiao e Teologia,Fisico,2016,Editora Fe,Estante C1
+008,Mitologia Grega Comentada,Rui Teixeira,200,Religiao e Teologia,Digital,2019,Editora Classica,Repositorio Digital
+009,Teologia Contemporanea,Beatriz Lima,200,Religiao e Teologia,Fisico,2014,Editora Fe,Estante C2
+010,Fundamentos de Ciencia Politica,Marcelo Duarte,300,Ciencias Sociais e Direito,Fisico,2020,Editora Juridica,Estante D1
+011,Direito Constitucional Esquematizado,Juliana Prado,300,Ciencias Sociais e Direito,Digital,2022,Editora Juridica,Repositorio Digital
+012,Sociologia da Educacao,Renato Vieira,300,Ciencias Sociais e Direito,Fisico,2018,Editora Educar,Estante D2
+013,Gramatica da Lingua Portuguesa,Sonia Martins,400,Linguistica e Idiomas,Fisico,2017,Editora Linguas,Estante E1
+014,Dicionario de Linguistica Aplicada,Hugo Nascimento,400,Linguistica e Idiomas,Digital,2021,Editora Linguas,Repositorio Digital
+015,Estudos Comparados de Idiomas,Camila Rocha,400,Linguistica e Idiomas,Fisico,2015,Editora Linguas,Estante E2
+016,Calculo Diferencial e Integral,Eduardo Farias,500,Ciencias Puras,Fisico,2019,Editora Exatas,Estante F1
+017,Introducao a Astronomia Moderna,Larissa Gomes,500,Ciencias Puras,Digital,2020,Editora Exatas,Repositorio Digital
+018,Quimica Geral Aplicada,Thiago Barros,500,Ciencias Puras,Fisico,2016,Editora Exatas,Estante F2
+019,Manual de Engenharia Civil,Roberto Cardoso,600,Ciencias Aplicadas,Fisico,2018,Editora Tecnica,Estante G1
+020,Medicina Preventiva na Pratica,Patricia Alves,600,Ciencias Aplicadas,Digital,2022,Editora Saude,Repositorio Digital
+021,Agricultura Sustentavel,Vinicius Moraes,600,Ciencias Aplicadas,Fisico,2017,Editora Rural,Estante G2
+022,Historia da Pintura Ocidental,Isabela Correia,700,Artes e Recreacao,Fisico,2015,Editora Arte,Estante H1
+023,Fundamentos de Arquitetura Moderna,Diego Santana,700,Artes e Recreacao,Digital,2020,Editora Arte,Repositorio Digital
+024,Musica Popular Brasileira,Fernanda Ribeiro,700,Artes e Recreacao,Fisico,2019,Editora Arte,Estante H2
+025,Contos Completos,Machado de Assis,800,Literatura,Fisico,1899,Editora Classica,Estante I1
+026,Antologia da Poesia Brasileira,Varios Autores,800,Literatura,Digital,2020,Editora Letras,Repositorio Digital
+027,Cronicas do Cotidiano,Rubem Alves,800,Literatura,Fisico,2005,Editora Letras,Estante I2
+028,Historia Geral da Civilizacao,Nelson Ferreira,900,Historia e Geografia,Fisico,2016,Editora Historica,Estante J1
+029,Geografia Fisica do Brasil,Andrea Machado,900,Historia e Geografia,Digital,2021,Editora Historica,Repositorio Digital
+030,Biografias que Marcaram a Historia,Olavo Pires,900,Historia e Geografia,Fisico,2014,Editora Historica,Estante J2

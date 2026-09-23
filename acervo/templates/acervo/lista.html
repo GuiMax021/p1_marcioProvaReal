@@ -1,0 +1,27 @@
+{% extends "acervo/base.html" %}
+{% load acervo_extras %}
+{% block content %}
+<h1>{{ titulo }}</h1>
+<div class="barra">
+  <a class="btn ok" href="{% url prefixo|add:'_criar' %}">+ Novo</a>
+  {% if pode_buscar %}
+  <form method="get"><input type="text" name="q" value="{{ q }}" placeholder="Buscar..."> <button class="btn sec" type="submit">Buscar</button></form>
+  {% endif %}
+</div>
+<table>
+  <tr>{% for rotulo, campo_ in colunas %}<th>{{ rotulo }}</th>{% endfor %}<th>Ações</th></tr>
+  {% for obj in object_list %}
+  <tr>
+    {% for rotulo_, campo in colunas %}
+      <td>{% if forloop.first and prefixo == "livro" %}<a href="{% url 'livro_detalhe' obj.pk %}">{{ obj|attr:campo }}</a>{% else %}{{ obj|attr:campo }}{% endif %}</td>
+    {% endfor %}
+    <td>
+      <a class="btn sec" href="{% url prefixo|add:'_editar' obj.pk %}">Editar</a>
+      <a class="btn perigo" href="{% url prefixo|add:'_excluir' obj.pk %}">Excluir</a>
+    </td>
+  </tr>
+  {% empty %}<tr><td colspan="{{ colunas|length|add:1 }}">Nenhum registro.</td></tr>
+  {% endfor %}
+</table>
+{% include "acervo/paginacao.html" %}
+{% endblock %}

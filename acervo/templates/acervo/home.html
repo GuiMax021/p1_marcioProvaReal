@@ -1,0 +1,16 @@
+{% extends "acervo/base.html" %}
+{% block content %}
+<h1>Painel</h1>
+<div class="cards">
+  <div class="card"><b>{{ total_livros }}</b>livros</div>
+  <div class="card"><b>{{ total_exemplares }}</b>exemplares</div>
+  <div class="card"><b>{{ total_membros }}</b>membros ativos</div>
+  <div class="card"><b>{{ emprestimos_abertos }}</b>empréstimos abertos</div>
+  <div class="card alerta"><b>{{ emprestimos_atrasados }}</b>em atraso</div>
+  <div class="card"><b>{{ reservas_ativas }}</b>reservas na fila</div>
+</div>
+<div class="barra">
+  <a class="btn" href="{% url 'emprestimo_criar' %}">Novo empréstimo</a>
+  <a class="btn" href="{% url 'reserva_criar' %}">Nova reserva</a>
+</div>
+{% endblock %}

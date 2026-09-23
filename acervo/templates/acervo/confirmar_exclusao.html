@@ -1,0 +1,11 @@
+{% extends "acervo/base.html" %}
+{% block content %}
+<h1>Excluir</h1>
+<div class="form-box">
+  <p>Confirma a exclusão de <b>{{ object }}</b>?</p>
+  <form method="post">{% csrf_token %}
+    <button class="btn perigo" type="submit">Excluir</button>
+    <a class="btn sec" href="{% url prefixo|add:'_lista' %}">Cancelar</a>
+  </form>
+</div>
+{% endblock %}

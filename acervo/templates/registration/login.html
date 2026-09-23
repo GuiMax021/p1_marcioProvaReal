@@ -1,0 +1,11 @@
+{% extends "acervo/base.html" %}
+{% block title %}Entrar{% endblock %}
+{% block content %}
+<h1>Entrar</h1>
+<div class="form-box">
+  <form method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn" type="submit">Entrar</button>
+  </form>
+</div>
+{% endblock %}

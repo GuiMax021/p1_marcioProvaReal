@@ -1,0 +1,24 @@
+{% extends "acervo/base.html" %}
+{% block content %}
+<h1>Reservas</h1>
+<div class="barra">
+  <a class="btn ok" href="{% url 'reserva_criar' %}">+ Nova reserva</a>
+  <a class="btn sec" href="?status=ativas">Na fila</a>
+  <a class="btn sec" href="?status=todas">Todas</a>
+</div>
+<table>
+  <tr><th>Livro</th><th>Membro</th><th>Data</th><th>Posição</th><th>Status</th><th>Ações</th></tr>
+  {% for r in object_list %}
+  <tr>
+    <td>{{ r.livro }}</td><td>{{ r.membro }}</td><td>{{ r.criada_em|date:"d/m/Y H:i" }}</td>
+    <td>{% if r.posicao_na_fila %}{{ r.posicao_na_fila }}º{% else %}—{% endif %}</td>
+    <td>{{ r.get_status_display }}</td>
+    <td>{% if r.status == "ATIVA" %}
+      <form class="inline" method="post" action="{% url 'reserva_cancelar' r.pk %}">{% csrf_token %}<button class="btn perigo" type="submit">Cancelar</button></form>
+    {% endif %}</td>
+  </tr>
+  {% empty %}<tr><td colspan="6">Nenhuma reserva.</td></tr>
+  {% endfor %}
+</table>
+{% include "acervo/paginacao.html" %}
+{% endblock %}
