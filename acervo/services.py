@@ -96,8 +96,6 @@ def reservar(livro, membro):
         raise RegraDeNegocioError("Membro inativo não pode reservar.")
     if not livro.exemplares.filter(tipo=Exemplar.Tipo.FISICO).exists():
         raise RegraDeNegocioError("Este livro não possui exemplar físico para reservar.")
-    if _disponiveis_do_livro(livro) > 0 and not livro.fila_reservas.exists():
-        raise RegraDeNegocioError("Há exemplar disponível: faça o empréstimo direto, sem reserva.")
     if membro.emprestimos_abertos.filter(exemplar__livro=livro).exists():
         raise RegraDeNegocioError("O membro já está com um exemplar deste livro.")
     if Reserva.objects.filter(livro=livro, membro=membro, status=Reserva.Status.ATIVA).exists():

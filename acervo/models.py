@@ -62,8 +62,10 @@ class Livro(models.Model):
 class ExemplarQuerySet(models.QuerySet):
     def disponiveis(self):
         """Exemplares fisicos sem emprestimo em aberto."""
+        # Retorna exemplares físicos que NÃO têm empréstimo aberto
+        from .models import Emprestimo
         return self.filter(tipo=Exemplar.Tipo.FISICO).exclude(
-            emprestimos__data_devolucao__isnull=True
+            pk__in=Emprestimo.objects.filter(data_devolucao__isnull=True).values('exemplar_id')
         )
 
 

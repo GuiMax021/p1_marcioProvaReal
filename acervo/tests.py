@@ -81,9 +81,11 @@ class DevolucaoEMultaTests(BaseTest):
 
 
 class ReservaTests(BaseTest):
-    def test_nao_reserva_se_ha_exemplar_disponivel(self):
-        with self.assertRaises(RegraDeNegocioError):
-            reservar(self.livro, self.ana)
+    def test_pode_reservar_mesmo_com_exemplar_disponivel(self):
+        # Agora é permitido fazer reserva preventiva mesmo com exemplares disponíveis
+        r = reservar(self.livro, self.ana)
+        self.assertEqual(r.status, Reserva.Status.ATIVA)
+        self.assertEqual(r.posicao_na_fila, 1)
 
     def test_fila_respeita_ordem(self):
         emprestar(self.ex, self.ana)
