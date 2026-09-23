@@ -24,6 +24,15 @@ Evolui o levantamento de acervo das **Aulas 04 e 05** (CDD, tipo Físico/Digital
 - **Fila**: exemplares livres são guardados para os primeiros da fila (por ordem de reserva); ao retirar, a reserva vira ATENDIDA e a fila anda.
 - Multa é gravada na devolução e precisa ser quitada para novos empréstimos.
 
+## Features obrigatórias do P1
+
+| Feature | Onde | O que faz |
+|---|---|---|
+| 1. Busca e filtro | `LivroLista` em `views.py` + `templates/acervo/livro_lista.html` | Busca por título/autor (`icontains` + `Q()`), filtro por disponibilidade e por categoria; combináveis; termo mantido no campo; mensagem quando não há resultado |
+| 2. Validação customizada | `LivroForm.clean_ano` em `forms.py` | Ano de publicação não pode ser futuro; erro exibido no formulário |
+
+Justificativa das escolhas: `docs/relatorio_p1_features.md`. Testes: classes `BuscaEFiltroLivrosTests` e `ValidacaoAnoLivroTests`.
+
 ## Como rodar
 
 ```bash
